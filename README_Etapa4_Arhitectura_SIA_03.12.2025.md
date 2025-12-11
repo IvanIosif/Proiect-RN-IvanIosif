@@ -36,12 +36,12 @@ Această etapă corespunde punctului **5. Dezvoltarea arhitecturii aplicației s
 ### 1. Tabelul Nevoie Reală → Soluție SIA → Modul Software (max ½ pagină)
 Completați in acest readme tabelul următor cu **minimum 2-3 rânduri** care leagă nevoia identificată în Etapa 1-2 cu modulele software pe care le construiți (metrici măsurabile obligatoriu):
 
-| **Nevoie reală concretă**    | **Cum o rezolvă SIA-ul vostru**     | **Modul software responsabil** |
-|------------------------------|-------------------------------------|--------------------------------|
- Clasificare radiografii       | Clasificare imagine →               |        RN(python)
- pentru detectarea pnuemoniei  | Alertă rapidă pentru medici         |  Introducere imagini jpg + preprocesing
- ----------------------------  |(< 3 secunde per imagine)            |---------------------------------
-                                --------------------------------------
+| **Nevoie reală concretă**     | **Cum o rezolvă SIA-ul vostru**     | **Modul software responsabil** |
+|------------------------------ |-------------------------------------|--------------------------------|
+| Clasificare radiografii       | Clasificare imagine →               |        RN(python)
+| pentru detectarea pnuemoniei  | Alertă rapidă pentru medici         |  Introducere imagini jpg + preprocesing
+|                               |(< 3 secunde per imagine)            |
+ -------------------------------------------------------------------------------------------------------                            
 Generare de date text-sintetice| Utilizatorul va introduce de la      | Generare de date text + preprocesing
 pentru simptome                | tastura input sub forma de text ce va|
                                |  reprezenta simptomele prezente      |
