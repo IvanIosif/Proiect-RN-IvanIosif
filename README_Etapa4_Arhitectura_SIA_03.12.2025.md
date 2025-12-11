@@ -96,10 +96,10 @@ Alegeți UNA sau MAI MULTE dintre variantele de mai jos și **demonstrați clar 
 
 | **Tip contribuție** | **Exemple concrete din inginerie** | **Dovada minimă cerută** |
 |---------------------|-------------------------------------|--------------------------|
-| **Date generate prin simulare fizică** | • Traiectorii robot în Gazebo<br>• Vibrații motor cu zgomot aleator calibrat<br>• Consumuri energetice proces industrial simulat | Cod Python/LabVIEW funcțional + grafice comparative (simulat vs real din literatură) + justificare parametri |
-| **Date achiziționate cu senzori proprii** | • 500-2000 măsurători accelerometru pe motor<br>• 100-1000 imagini capturate cu cameră montată pe robot<br>• 200-1000 semnale GPS/IMU de pe platformă mobilă<br>• Temperaturi/presiuni procesate din Arduino/ESP32 | Foto setup experimental + CSV-uri produse + descriere protocol achiziție (frecvență, durata, condiții) |
+| **Date generate prin simulare fizică** |  | Cod Python + grafice comparative (simulat vs real din literatură) + justificare parametri |
+| **Date create text** | • <br>• |
 | **Etichetare/adnotare manuală** | • Etichetat manual 1000+ imagini defecte sudură<br>• Anotat 500+ secvențe video cu comportamente robot<br>• Clasificat manual 2000+ semnale vibrații (normal/anomalie)<br>• Marcat manual 1500+ puncte de interes în planuri tehnice | Fișier Excel/JSON cu labels + capturi ecran tool etichetare + log timestamp-uri lucru |
-| **Date sintetice prin metode avansate** | • Simulări FEM/CFD pentru date dinamice proces | Cod implementare metodă + exemple before/after + justificare hiperparametri + validare pe subset real |
+| **Date sintetice prin metode avansate** | Cod implementare metodă + exemple before/after + justificare hiperparametri + validare pe subset real |
 
 #### Declarație obligatorie în README:
 
@@ -125,7 +125,7 @@ Fiecare input textual descrie simptomele pacientului (ex: „tuse severă, febr�
 Sistemul combină diagnosticul generat de modelul de rețea neuronală pe baza imaginii cu probabilitatea derivată din inputul textual,
 rezultând o **probabilitate finală combinată unică** pentru fiecare observație.  
   
-**Locația codului:** `src/data_acquisition/[numele_scriptului]`
+**Locația codului:** `src/data_acquisition/Procesare` + `src/data_acquisition/Procesare2` + `src/data_acquisition/TextProcessing` + `src/data_acquisition/DictionarPneumonie`
 **Locația datelor:** `data/generated/` sau `data/raw/original/`
 
 **Dovezi:**
@@ -255,10 +255,10 @@ actualizează parametrii controlerului PID pentru reglarea vitezei motorului"].
 
 Toate cele 3 module trebuie să **pornească și să ruleze fără erori** la predare. Nu trebuie să fie perfecte, dar trebuie să demonstreze că înțelegeți arhitectura.
 
-| **Modul** | **Python (exemple tehnologii)** | **LabVIEW** | **Cerință minimă funcțională (la predare)** |
+| **Modul** | **Python (exemple tehnologii)** | **Cerință minimă funcțională (la predare)** |
 |-----------|----------------------------------|-------------|----------------------------------------------|
 | **1. Data Logging / Acquisition** | `src/data_acquisition/` | LLB cu VI-uri de generare/achiziție | **MUST:** Produce CSV cu datele voastre (inclusiv cele 40% originale). Cod rulează fără erori și generează minimum 100 samples demonstrative. |
-| **2. Neural Network Module** | `src/neural_network/model.py` sau folder dedicat | LLB cu VI-uri RN | **MUST:** Modelul RN definit, compilat, poate fi încărcat. **NOT required:** Model antrenat cu performanță bună (poate avea weights random/inițializați). |
+| **2. Neural Network Module** | `src/neural_network/model.py` sau folder dedicat | | **MUST:** Modelul RN definit, compilat, poate fi încărcat. **NOT required:** Model antrenat cu performanță bună (poate avea weights random/inițializați). |
 | **3. Web Service / UI** | Streamlit, Gradio, FastAPI, Flask, Dash | WebVI sau Web Publishing Tool | **MUST:** Primește input de la user și afișează un output. **NOT required:** UI frumos, funcționalități avansate. |
 
 #### Detalii per modul:
@@ -347,7 +347,7 @@ proiect-rn-[nume-prenume]/
 - [ ] Repository structurat conform modelului de mai sus (verificat consistență cu Etapa 3)
 
 ### Modul 1: Data Logging / Acquisition
-- [ ] Cod rulează fără erori (`python src/data_acquisition/...` sau echivalent LabVIEW)
+- [ ] Cod rulează fără erori (`python src/data_acquisition/...`)
 - [ ] Produce minimum 40% date originale din dataset-ul final
 - [ ] CSV generat în format compatibil cu preprocesarea din Etapa 3
 - [ ] Documentație în `src/data_acquisition/README.md` cu:
