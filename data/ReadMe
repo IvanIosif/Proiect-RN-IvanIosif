@@ -1,28 +1,33 @@
-## 1. Structura Fișierelor
-Dataset-ul este compus din 20 de caracteristici (caracteristici clinice) și o etichetă binară (Diagnosis).
-* **Format:** CSV (comma-separated values)
-* **Eșantion total:** 8000 de instanțe.
+# Documentație Set de Date - Triaj Medical Rural
 
-## 2. Dicționarul Datelor (Features Q1-Q20)
-Fiecare coloană `Q` reprezintă un răspuns la chestionarul medical pe o scară de la 1 la 5.
+Acest folder conține datele utilizate pentru antrenarea și testarea sistemului de diagnostic diferențial între **Pneumonie** și **Tuberculoză**.
 
-| Index | Simptom | Corelație Clasă (Scor 4-5) |
+## 1. Originea Datelor
+- **Tip date:** Generate prin simulare clinică probabilistică (Modul 1).
+- **Volum total:** 30,000 observații.
+- **Procent date originale:** 100% (generate integral prin scriptul `src/data_acquisition/generate.py`).
+
+## 2. Structura Fișierului `medical_dataset_30k.csv`
+Dataset-ul este organizat sub formă de tabel, unde fiecare rând reprezintă un pacient evaluat în mediul rural.
+
+| Coloană | Descriere | Domeniu Valori |
 | :--- | :--- | :--- |
-| Q1 | Temperatură (Febră) | Pneumonie |
-| Q2-Q5 | Oboseală, Respirație, Tuse | Tuberculoză |
-| Q6-Q7 | Durere piept, Mucus | Pneumonie |
-| Q8-Q9 | Frisoane, Durere cap | Tuberculoză |
-| Q10 | Dureri musculare | Pneumonie |
-| Q11-Q12 | Transpirație, Respirație nocturnă | Tuberculoză |
-| Q13-Q14 | Greață, Gust/Miros | Pneumonie |
-| Q15-Q17 | Greutate, Sânge, Efort | Tuberculoză |
-| Q18 | Gât/Ganglioni | Pneumonie |
-| Q19-Q20 | Apetit, Febră recurentă | Tuberculoză |
+| **Q1 - Q20** | Răspunsuri la chestionarul de simptome | 1 (Deloc) - 5 (Sever) |
+| **Diagnosis** | Eticheta de diagnostic (Target) | 0 (Pneumonie), 1 (Tuberculoză) |
 
-## 3. Etichetarea Clasei (Diagnosis)
-* **0**: Pneumonie (corelat cu simptomele marcate cu P).
-* **1**: Tuberculoză (corelat cu simptomele marcate cu T).
+### Detalii Simptome (Mapping):
+* **Q1:** Febră ridicată
+* **Q3:** Dificultăți de respirație
+* **Q15:** Scădere în greutate (simptom ancoră Tuberculoză)
+* **Q16:** Tuse cu sânge (simptom ancoră Tuberculoză)
+* **Q19:** Pierderea poftei de mâncare
 
-## 4. Analiza Calității
-* **Valori lipsă:** 0%. Datele au fost validate pentru a nu conține câmpuri goale.
-* **Zgomot:** S-a introdus variabilitate programatică (valori medii 2-3) pentru a simula cazurile medicale dificil de diagnosticat, rezultând într-o frontieră de decizie complexă.
+## 3. Parametrii Simulării
+Datele au fost generate folosind două profiluri clinice distincte:
+1. **Profil Pneumonie (Clasa 0):** Probabilitate ridicată pentru simptome acute (Q1-Q10).
+2. **Profil Tuberculoză (Clasa 1):** Probabilitate ridicată pentru simptome cronice și specifice (Q11-Q20).
+
+Pentru a simula realitatea clinică, s-a introdus un **zgomot statistic de 15%**, permițând suprapunerea simptomelor (ex: pacienți cu Pneumonie care prezintă și slăbiciune accentuată), forțând astfel Rețeaua Neuronală să învețe corelații complexe, nu doar reguli simple.
+
+## 4. Locație Date
+- **Date brute/generate:** `D:\Facultate\RN\data\raw`
