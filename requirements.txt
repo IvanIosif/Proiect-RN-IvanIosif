@@ -3,7 +3,7 @@
 
 Proiectul este construit pe un ecosistem Python modern, optimizat pentru procesarea datelor medicale:
 
-1. **Procesare & Analiză:** `pandas`, `numpy` - utilizate pentru generarea și manipularea celor 30.000 de mostre de date originale.
+1. **Procesare & Analiză:** `pandas`, `numpy` - utilizate pentru generarea și manipularea celor 30.000 de chestionare de date originale.
 2. **Inteligență Artificială:** `tensorflow` (Keras) - folosit pentru definirea arhitecturii MLP (Multi-Layer Perceptron) cu 20 de intrări.
 3. **Interfață Utilizator:** `streamlit` - oferă o experiență web interactivă pentru introducerea simptomelor de către asistenții medicali rurali.
 
