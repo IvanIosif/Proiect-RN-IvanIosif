@@ -1,0 +1,15 @@
+{
+    "test_accuracy": 0.8273,
+    "test_f1_macro": 0.8253,
+    "latency_ms": 35,
+    "tbc_recall": 0.8595555555555555,
+    "pneumonia_recall": 0.8013333333333333,
+    "macro_f1": 0.8303006315623823,
+    "false Negatives":0.14,
+    "false Positives":0.19,
+    "improvement_vs_baseline": {
+    "accuracy": "+1.17%",
+    "f1_score": "+1.04%",
+    "latency": "+30"
+  }
+}
