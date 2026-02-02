@@ -9,76 +9,60 @@ import seaborn as sns
 import tensorflow as tf
 from sklearn.metrics import f1_score, confusion_matrix, classification_report
 
-# --- 0. FIX PENTRU COMPATIBILITATE ---
-os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+# --- 0. CONFIGURARE CĂI RELATIVE (AUTOMATIZARE) ---
+# Detectăm locația scriptului actual
+current_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Stabilitate pentru execuție pe versiuni noi de Python
-tf.config.run_functions_eagerly(True)
+# Urcăm un nivel (sau două, depinde unde e fișierul) pentru a ajunge la rădăcina RN
+# Dacă optimize.py este în RN/src/, urcăm un nivel.
+PATH_BASE = os.path.abspath(os.path.join(current_dir, "..")) 
 
-# --- 1. CONFIGURARE CĂI ---
-PATH_BASE = r"D:\Facultate\RN"
+# Definirea directoarelor relativ la rădăcină
 PATH_OUT = os.path.join(PATH_BASE, "results", "etapa6")
 PATH_MODELS = os.path.join(PATH_BASE, "models")
 PATH_CONFIG = os.path.join(PATH_BASE, "config")
+PATH_DATA = os.path.join(PATH_BASE, "data")
 
+# Creare directoare dacă nu există
 for path in [PATH_OUT, PATH_MODELS, PATH_CONFIG]:
     os.makedirs(path, exist_ok=True)
 
-# Mapare Semantică Corectată: 1 = Favorizează TBC (T), 0 = Favorizează Pneumonie (P)
+# --- 1. FIX PENTRU COMPATIBILITATE ---
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+tf.config.run_functions_eagerly(True)
+
+# Mapare Semantică (Rămâne neschimbată)
 semantic_map = {
-    0:  [1, 1, 1, 0, 0], # Q1: Febra
-    1:  [0, 0, 0, 1, 1], # Q2: Activități
-    2:  [1, 0, 0, 1, 1], # Q3: Respirație
-    3:  [0, 0, 0, 1, 1], # Q4: Durată tuse
-    4:  [0, 0, 0, 1, 1], # Q5: Frecvență tuse
-    5:  [1, 1, 0, 0, 0], # Q6: Durere piept
-    6:  [1, 0, 0, 0, 0], # Q7: Tuse productivă
-    7:  [1, 0, 0, 0, 1], # Q8: Frisoane
-    8:  [1, 0, 0, 0, 1], # Q9: Dureri cap
-    9:  [0, 0, 0, 0, 0], # Q10: Muscular
-    10: [1, 0, 0, 1, 1], # Q11: Transpirații noapte
-    11: [0, 0, 0, 1, 1], # Q12: Respirație spate
-    12: [1, 0, 0, 0, 0], # Q13: Greață/Abdominal
-    13: [1, 0, 0, 0, 0], # Q14: Gust/Miros
-    14: [0, 0, 1, 1, 1], # Q15: Scădere greutate 
-    15: [0, 0, 1, 1, 1], # Q16: Sânge în tuse 
-    16: [0, 0, 0, 1, 1], # Q17: Efort respirație 
-    17: [1, 0, 0, 0, 0], # Q18: Ganglioni 
-    18: [0, 0, 0, 1, 1], # Q19: Poftă mâncare 
-    19: [1, 0, 0, 1, 1]  # Q20: Febră intermitentă
+    0:  [1, 1, 1, 0, 0], 1:  [0, 0, 0, 1, 1], 2:  [1, 0, 0, 1, 1],
+    3:  [0, 0, 0, 1, 1], 4:  [0, 0, 0, 1, 1], 5:  [1, 1, 0, 0, 0],
+    6:  [1, 0, 0, 0, 0], 7:  [1, 0, 0, 0, 1], 8:  [1, 0, 0, 0, 1],
+    9:  [0, 0, 0, 0, 0], 10: [1, 0, 0, 1, 1], 11: [0, 0, 0, 1, 1],
+    12: [1, 0, 0, 0, 0], 13: [1, 0, 0, 0, 0], 14: [0, 0, 1, 1, 1],
+    15: [0, 0, 1, 1, 1], 16: [0, 0, 0, 1, 1], 17: [1, 0, 0, 0, 0],
+    18: [0, 0, 0, 1, 1], 19: [1, 0, 0, 1, 1]
 }
 
 def apply_semantic_logic(X):
-    """
-    Ponderare selectivă: Pastreaza logica de Pneumonie, dar forțează TBC-ul 
-    să iasă la suprafață în caz de derută prin simptome 'ancoră' (Sânge, Greutate).
-    """
     X_opt = np.copy(X)
-    tbc_anchors = [14, 15] # Q15 (Greutate), Q16 (Sânge)
-    
+    tbc_anchors = [14, 15] 
     for i in range(X.shape[0]):
         for j in range(20):
             val_idx = int(round(X[i, j] * 4))
             val_idx = max(0, min(val_idx, 4))
-            
-            # Verificăm orientarea conform hărții semantice
             if semantic_map[j][val_idx] == 1:
-                if j in tbc_anchors and val_idx >= 2: # Dacă e simptom critic prezent
-                    X_opt[i, j] *= 1.55  
-                else:
-                    X_opt[i, j] *= 1.25  
+                X_opt[i, j] *= (1.55 if j in tbc_anchors and val_idx >= 2 else 1.25)
             else:
-       
                 X_opt[i, j] *= 0.98 
     return X_opt
 
 def load_data(split):
-    p_path = os.path.join(PATH_BASE, "data", split, "pneumonie", f"pneumonie_{split}.csv")
-    t_path = os.path.join(PATH_BASE, "data", split, "tuberculoza", f"tuberculoza_{split}.csv")
+    # Folosim PATH_DATA construit relativ
+    p_path = os.path.join(PATH_DATA, split, "pneumonie", f"pneumonie_{split}.csv")
+    t_path = os.path.join(PATH_DATA, split, "tuberculoza", f"tuberculoza_{split}.csv")
     
     if not os.path.exists(p_path) or not os.path.exists(t_path):
-        raise FileNotFoundError(f"Lipsesc fisierele de date in folderul {split}!")
+        raise FileNotFoundError(f"Lipsesc fisierele de date în: {os.path.join(PATH_DATA, split)}")
         
     df = pd.concat([pd.read_csv(p_path), pd.read_csv(t_path)], ignore_index=True)
     X = df.drop('Diagnosis', axis=1).values.astype('float32')
@@ -86,7 +70,7 @@ def load_data(split):
     return apply_semantic_logic(X), y
 
 # --- 2. ÎNCĂRCARE DATE ---
-print("⏳ Încărcare și procesare date (Strategia Ancoră & Balanță)...")
+print(f"⏳ Încărcare date din: {PATH_DATA}")
 X_train, y_train = load_data("train")
 X_val, y_val = load_data("validation")
 X_test, y_test = load_data("test")
@@ -100,7 +84,7 @@ experiments = [
 ]
 
 results_list = []
-best_f1, best_model, best_history, best_cfg = 0, None, None, None
+best_f1, best_model, best_cfg = 0, None, None
 
 for cfg in experiments:
     tf.keras.backend.clear_session()
@@ -116,7 +100,6 @@ for cfg in experiments:
                   loss='binary_crossentropy', metrics=['accuracy'], run_eagerly=True)
     
     print(f"\n🚀 Antrenare {cfg['id']}...")
-    # Folosim class_weight: 1.25 pentru TBC ca ajutor suplimentar la nivel de loss
     history = model.fit(X_train, y_train, validation_data=(X_val, y_val),
                         epochs=50, batch_size=32, verbose=1,
                         class_weight={0: 1.0, 1: 1.25}, 
@@ -127,15 +110,14 @@ for cfg in experiments:
     acc = np.mean(y_pred == y_test)
     
     results_list.append({"Exp": cfg["id"], "Accuracy": float(acc), "F1-score": float(f1)})
-    
     if f1 > best_f1:
-        best_f1, best_model, best_history, best_cfg = f1, model, history, cfg
+        best_f1, best_model, best_cfg = f1, model, cfg
 
 # --- 4. SALVARE REZULTATE ȘI METRICI ---
-# 1. Tabel rezultate CSV
+# 1. Tabel CSV
 pd.DataFrame(results_list).to_csv(os.path.join(PATH_OUT, "optimisation_experiments.csv"), index=False)
 
-# 2. JSON Metrics pentru raportul final
+# 2. JSON Metrics
 y_pred_final = (best_model.predict(X_test, verbose=0) > 0.5).astype(int).flatten()
 report = classification_report(y_test, y_pred_final, output_dict=True)
 
@@ -150,21 +132,21 @@ final_metrics = {
 with open(os.path.join(PATH_OUT, "final_metrics.json"), "w") as f:
     json.dump(final_metrics, f, indent=4)
 
-# 3. Grafice
+# 3. Grafice și Matrice
 plt.figure(figsize=(12, 5))
 plt.subplot(1, 2, 1); sns.barplot(x="Exp", y="Accuracy", data=pd.DataFrame(results_list)); plt.title("Accuracy Comparison")
 plt.subplot(1, 2, 2); sns.barplot(x="Exp", y="F1-score", data=pd.DataFrame(results_list)); plt.title("F1-Score Comparison")
 plt.savefig(os.path.join(PATH_OUT, "metrics_comparison.png"))
 
-# 4. Matrice de Confuzie
 cm = confusion_matrix(y_test, y_pred_final)
 plt.figure(figsize=(8, 6)); sns.heatmap(cm, annot=True, fmt='d', cmap='RdYlGn', 
                                         xticklabels=['Pneu', 'TBC'], yticklabels=['Pneu', 'TBC'])
-plt.title(f"Confusion Matrix - {best_cfg['id']}"); plt.savefig(os.path.join(PATH_OUT, "confusion_matrix_optimized.png"))
+plt.title(f"Confusion Matrix - {best_cfg['id']}")
+plt.savefig(os.path.join(PATH_OUT, "confusion_matrix_optimized.png"))
 
-# 5. Salvare Model
+# 4. Salvare Model Final și Config
 best_model.save(os.path.join(PATH_MODELS, "optimized_model.keras"))
 joblib.dump("semantic_v2_logic", os.path.join(PATH_CONFIG, "scaler_optimized.skl"))
 
 print(f"\n✅ Etapa 6 Finalizată!")
-print(f"Model: {best_cfg['id']} | F1: {best_f1:.4f} | Recall TBC: {report['1.0']['recall']:.4f}")
+print(f"Toate fișierele au fost salvate relativ în: {PATH_BASE}")
