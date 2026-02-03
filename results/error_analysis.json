@@ -1,0 +1,62 @@
+[
+    {
+        "sample_index": 10,
+        "real_diagnosis": "Pneumonie",
+        "predicted_diagnosis": "TBC",
+        "confidence_score": 0.5607,
+        "key_symptoms": {
+            "Q1_Febra": 0.5,
+            "Q15_Greutate": 0.5,
+            "Q16_Sange": 1.0
+        },
+        "analysis": "Overlap simptomatic sau valori atipice ale ancorelor."
+    },
+    {
+        "sample_index": 15,
+        "real_diagnosis": "Pneumonie",
+        "predicted_diagnosis": "TBC",
+        "confidence_score": 0.5736,
+        "key_symptoms": {
+            "Q1_Febra": 0.5,
+            "Q15_Greutate": 0.5,
+            "Q16_Sange": 0.75
+        },
+        "analysis": "Overlap simptomatic sau valori atipice ale ancorelor."
+    },
+    {
+        "sample_index": 31,
+        "real_diagnosis": "Pneumonie",
+        "predicted_diagnosis": "TBC",
+        "confidence_score": 0.6144,
+        "key_symptoms": {
+            "Q1_Febra": 0.75,
+            "Q15_Greutate": 0.0,
+            "Q16_Sange": 1.0
+        },
+        "analysis": "Overlap simptomatic sau valori atipice ale ancorelor."
+    },
+    {
+        "sample_index": 71,
+        "real_diagnosis": "Pneumonie",
+        "predicted_diagnosis": "TBC",
+        "confidence_score": 0.5419,
+        "key_symptoms": {
+            "Q1_Febra": 0.0,
+            "Q15_Greutate": 1.0,
+            "Q16_Sange": 0.25
+        },
+        "analysis": "Overlap simptomatic sau valori atipice ale ancorelor."
+    },
+    {
+        "sample_index": 72,
+        "real_diagnosis": "Pneumonie",
+        "predicted_diagnosis": "TBC",
+        "confidence_score": 0.5772,
+        "key_symptoms": {
+            "Q1_Febra": 0.0,
+            "Q15_Greutate": 0.5,
+            "Q16_Sange": 0.5
+        },
+        "analysis": "Overlap simptomatic sau valori atipice ale ancorelor."
+    }
+]
