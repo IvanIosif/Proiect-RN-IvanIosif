@@ -11,7 +11,7 @@
 
 Acest proiect propune o soluție software avansată de asistență medicală (SIA) destinată triajului rapid între două patologii respiratorii severe: Tuberculoza (TBC) și Pneumonia.
 
-Spre deosebire de triajul clasic bazat pe observație umană, care poate fi subiectiv, acest sistem utilizează o Rețea Neuronală Artificială (Deep Neural Network) antrenată pe un set complex de date
+Spre deosebire de triajul clasic bazat pe observație umană, care poate fi subiectiv, acest sistem utilizează o Rețea Neuronală Artificială antrenată pe un set complex de date
 simptomatice pentru a identifica pattern-uri și a oferi un diagnostic preliminar de mare precizie.
 
 ### 🎯 Obiectiv Principal: Suport medical in triaj medical
