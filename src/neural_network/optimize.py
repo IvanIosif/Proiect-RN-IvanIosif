@@ -9,13 +9,11 @@ import seaborn as sns
 import tensorflow as tf
 from sklearn.metrics import f1_score, confusion_matrix, classification_report
 
-# --- 0. CONFIGURARE CĂI RELATIVE (AUTOMATIZARE) ---
-# Detectăm locația scriptului actual
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 PATH_BASE = os.path.abspath(os.path.join(current_dir, "..")) 
 
-# Definirea directoarelor relativ la rădăcină
 PATH_OUT = os.path.join(PATH_BASE, "results", "etapa6")
 PATH_MODELS = os.path.join(PATH_BASE, "models")
 PATH_CONFIG = os.path.join(PATH_BASE, "config")
@@ -28,7 +26,7 @@ os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 tf.config.run_functions_eagerly(True)
 
-# Mapare Semantică (Rămâne neschimbată)
+# Mapare Semantică 
 semantic_map = {
     0:  [1, 1, 1, 0, 0], 1:  [0, 0, 0, 1, 1], 2:  [1, 0, 0, 1, 1],
     3:  [0, 0, 0, 1, 1], 4:  [0, 0, 0, 1, 1], 5:  [1, 1, 0, 0, 0],
@@ -53,7 +51,7 @@ def apply_semantic_logic(X):
     return X_opt
 
 def load_data(split):
-    # Folosim PATH_DATA construit relativ
+    
     p_path = os.path.join(PATH_DATA, split, "pneumonie", f"pneumonie_{split}.csv")
     t_path = os.path.join(PATH_DATA, split, "tuberculoza", f"tuberculoza_{split}.csv")
     
@@ -146,4 +144,5 @@ joblib.dump("semantic_v2_logic", os.path.join(PATH_CONFIG, "scaler_optimized.skl
 
 print(f"\n✅ Etapa 6 Finalizată!")
 print(f"Toate fișierele au fost salvate relativ în: {PATH_BASE}")
+
 
