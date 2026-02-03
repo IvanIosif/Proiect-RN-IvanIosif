@@ -13,8 +13,6 @@ from sklearn.metrics import f1_score, confusion_matrix, classification_report
 # Detectăm locația scriptului actual
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Urcăm un nivel (sau două, depinde unde e fișierul) pentru a ajunge la rădăcina RN
-# Dacă optimize.py este în RN/src/, urcăm un nivel.
 PATH_BASE = os.path.abspath(os.path.join(current_dir, "..")) 
 
 # Definirea directoarelor relativ la rădăcină
@@ -23,11 +21,9 @@ PATH_MODELS = os.path.join(PATH_BASE, "models")
 PATH_CONFIG = os.path.join(PATH_BASE, "config")
 PATH_DATA = os.path.join(PATH_BASE, "data")
 
-# Creare directoare dacă nu există
 for path in [PATH_OUT, PATH_MODELS, PATH_CONFIG]:
     os.makedirs(path, exist_ok=True)
 
-# --- 1. FIX PENTRU COMPATIBILITATE ---
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 tf.config.run_functions_eagerly(True)
@@ -150,3 +146,4 @@ joblib.dump("semantic_v2_logic", os.path.join(PATH_CONFIG, "scaler_optimized.skl
 
 print(f"\n✅ Etapa 6 Finalizată!")
 print(f"Toate fișierele au fost salvate relativ în: {PATH_BASE}")
+
