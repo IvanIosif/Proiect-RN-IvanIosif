@@ -5,8 +5,6 @@ import pandas as pd
 # Detectăm locația scriptului actual (presupunem că e în RN/src/neural_network/ sau similar)
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Urcăm nivelurile necesare pentru a ajunge la rădăcina proiectului (RN)
-# Dacă scriptul e în src/neural_network, urcăm 2 niveluri.
 # Dacă e direct în src, urcăm 1 nivel. Ajustăm aici:
 PATH_BASE = os.path.abspath(os.path.join(current_dir, "..", ".."))
 
