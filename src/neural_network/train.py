@@ -9,8 +9,11 @@ import seaborn as sns
 import tensorflow as tf
 from sklearn.metrics import f1_score, confusion_matrix
 
-# --- 1. CONFIGURARE CĂI ---
-PATH_BASE = r"D:\Facultate\RN"
+# Detectăm unde se află fișierul curent (ex: src/neural_network/train.py)
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+PATH_BASE = os.path.abspath(os.path.join(current_dir, "../../"))
+
 PATH_DATA = os.path.join(PATH_BASE, "data")
 PATH_MODELS = os.path.join(PATH_BASE, "models")
 PATH_RESULTS = os.path.join(PATH_BASE, "results")
@@ -20,19 +23,19 @@ PATH_DOCS = os.path.join(PATH_BASE, "docs")
 for p in [PATH_MODELS, PATH_RESULTS, PATH_CONFIG, PATH_DOCS]:
     os.makedirs(p, exist_ok=True)
 
-# --- 2. FUNCȚII ÎNCĂRCARE ȘI AUGMENTARE (Cerință Nivel 2) ---
+# --- 2. FUNCȚII ÎNCĂRCARE ȘI AUGMENTARE ---
 def apply_augmentation(X):
-    """Adaugă zgomot Gaussian pentru a simula variații de senzori (Jittering)."""
     noise = np.random.normal(0, 0.02, X.shape)
     X_augmented = X + noise
     return np.clip(X_augmented, 0, 1)
 
 def load_split(split_name, augment=False):
+    # Căile către CSV-uri sunt acum relative la PATH_BASE
     p_path = os.path.join(PATH_DATA, split_name, "pneumonie", f"pneumonie_{split_name}.csv")
     t_path = os.path.join(PATH_DATA, split_name, "tuberculoza", f"tuberculoza_{split_name}.csv")
     
     if not os.path.exists(p_path) or not os.path.exists(t_path):
-        raise FileNotFoundError(f"❌ Lipsesc datele în folderul: {split_name}")
+        raise FileNotFoundError(f"❌ Lipsesc datele în folderul: {os.path.relpath(p_path, PATH_BASE)}")
 
     df_p = pd.read_csv(p_path)
     df_t = pd.read_csv(t_path)
@@ -50,6 +53,7 @@ def load_split(split_name, augment=False):
     return X, y
 
 # Încărcare date
+print(f"📂 Încărcare date din: {PATH_DATA}")
 X_train, y_train = load_split("train", augment=True)
 X_val, y_val     = load_split("validation")
 X_test, y_test   = load_split("test")
@@ -77,8 +81,6 @@ model.compile(
 )
 
 # --- 5. CALLBACKS (OBLIGATORIU NIVEL 2) ---
-
-# 1. Early Stopping
 early_stop = tf.keras.callbacks.EarlyStopping(
     monitor='val_loss', 
     patience=5, 
@@ -86,7 +88,6 @@ early_stop = tf.keras.callbacks.EarlyStopping(
     verbose=1
 )
 
-# 2. Learning Rate Scheduler
 lr_scheduler = tf.keras.callbacks.ReduceLROnPlateau(
     monitor='val_loss', 
     factor=0.5, 
@@ -106,7 +107,8 @@ history = model.fit(
     verbose=1
 )
 
-# --- 7. SALVARE GRAFIC LOSS (docs/loss_curve.png) ---
+# --- 7. SALVARE REZULTATE VIZUALE ---
+# Grafic Loss
 plt.figure(figsize=(10, 6))
 plt.plot(history.history['loss'], label='Loss Antrenare', color='blue', linewidth=2)
 plt.plot(history.history['val_loss'], label='Loss Validare (Val_Loss)', color='red', linestyle='--', linewidth=2)
@@ -115,31 +117,15 @@ plt.xlabel('Epoci', fontsize=12)
 plt.ylabel('Valoare Loss', fontsize=12)
 plt.legend()
 plt.grid(True, alpha=0.3)
-plt.savefig(os.path.join(PATH_DOCS, "loss_curve.png"))
-print(f"✅ Graficul loss_curve.png a fost salvat în {PATH_DOCS}")
+path_loss = os.path.join(PATH_DOCS, "loss_curve.png")
+plt.savefig(path_loss)
 plt.close()
 
-# --- 8. SALVARE REZULTATE ȘI METRICI ---
-scaler_to_save = {
-    "status": "already_normalized",
-    "range": (0, 1),
-    "features_count": 20
-}
-
-# Salvarea efectivă în folderul config cu extensia .skl
-scaler_path = os.path.join(PATH_CONFIG, "scaler.skl")
-joblib.dump(scaler_to_save, scaler_path)
-# A. Model
-model.save(os.path.join(PATH_MODELS, "trained_model.keras"))
-
-# B. Istoric CSV
-pd.DataFrame(history.history).to_csv(os.path.join(PATH_RESULTS, "training_history.csv"), index=False)
-
-# C. Predicții pentru Metrici și Confusion Matrix
+# Predicții
 y_pred_prob = model.predict(X_test)
 y_pred = (y_pred_prob > 0.5).astype(int)
 
-# D. Confusion Matrix (CERINȚĂ NIVEL 2)
+# Confusion Matrix
 cm = confusion_matrix(y_test, y_pred)
 plt.figure(figsize=(8, 6))
 sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
@@ -150,16 +136,19 @@ plt.xlabel('Predicție Model')
 plt.ylabel('Realitate (Etichetă)')
 path_cm = os.path.join(PATH_DOCS, "confusion_matrix.png")
 plt.savefig(path_cm)
-print(f"✅ Matricea de confuzie a fost salvată în {path_cm}")
 plt.close()
 
-# E. Salvare JSON și YAML
-acc = np.mean(y_pred.flatten() == y_test)
-f1 = f1_score(y_test, y_pred, average='macro')
+# --- 8. EXPORT ARTEFACTE ---
+# Salvare Scaler (Meta-data)
+joblib.dump({"status": "already_normalized", "features_count": 20}, os.path.join(PATH_CONFIG, "scaler.skl"))
 
+# Salvare Model (.keras)
+model.save(os.path.join(PATH_MODELS, "trained_model.keras"))
+
+# Salvare Metrici și Hiperparametri
 metrics = {
-    "accuracy": round(float(acc), 4),
-    "f1_macro": round(float(f1), 4),
+    "accuracy": round(float(np.mean(y_pred.flatten() == y_test)), 4),
+    "f1_macro": round(float(f1_score(y_test, y_pred, average='macro')), 4),
     "epochs_until_stop": len(history.history['loss'])
 }
 
@@ -169,5 +158,5 @@ with open(os.path.join(PATH_RESULTS, "test_metrics.json"), "w") as f:
 with open(os.path.join(PATH_RESULTS, "hyperparameters.yaml"), 'w') as f:
     yaml.dump(params, f)
 
-print(f"\n✅ Finalizat!")
-print(f"📊 Test Accuracy: {acc*100:.2f}% | F1-Score: {f1:.4f}")
+print(f"\n✅ Finalizat cu succes!")
+print(f"📊 Rezultatele au fost salvate relativ la: {os.path.relpath(PATH_BASE, os.getcwd())}")
