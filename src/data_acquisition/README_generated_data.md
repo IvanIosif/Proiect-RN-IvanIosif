@@ -14,7 +14,8 @@ Spre deosebire de o generare pur aleatorie, sistemul utilizează un Logic Map (h
 
 ## 2. Curățare și Normalizare
 
-Pentru a optimiza antrenamentul, datele brute (scară 1-5) sunt convertite în Interval Unitar [0, 1].Formula: $x_{norm} = \frac{x - 1}{4}$Scop: Eliminarea diferențelor de scară și prevenirea saturării funcțiilor de activare ale modelului.
+Pentru a optimiza antrenamentul, datele brute (scară 1-5) sunt convertite în Interval Unitar [0, 1].Formula: x = {x - 1}/4 
+Scop: Eliminarea diferențelor de scară și prevenirea saturării funcțiilor de activare ale modelului.
 
 ## 3. Distribuție și Stratificare
 
