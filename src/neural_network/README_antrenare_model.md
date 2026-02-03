@@ -18,7 +18,7 @@ Dropout (0.2): Pentru prevenirea overfitting-ului (dezactivează aleatoriu 20% d
 
 Output Layer: 1 neuron cu activare Sigmoid (generează o probabilitate între 0 și 1).
 
-< 0.5 -> Pneumonie (Clasa 0)
+<= 0.5 -> Pneumonie (Clasa 0)
 
 > 0.5 -> TBC (Clasa 1)
 
