@@ -3,7 +3,7 @@
 | Câmp | Valoare |
 |------|------|
 | **Student** | Ivan Iosif Sebastian |
-| **Grupa / Specializare** | [ex: 633AB / Informatică Industrială] |
+| **Grupa / Specializare** | [633AB / Informatică Industrială] |
 | **Disciplina** | Rețele Neuronale |
 | **Instituție** | POLITEHNICA București – FIIR |
 | **Link Repository GitHub** | https://github.com/IvanIosif/Proiect-RN|
